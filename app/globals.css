@@ -1,0 +1,254 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --announcement-height: 36px;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-cream font-sans text-ink antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display;
+    font-variation-settings: "SOFT" 30, "WONK" 1;
+  }
+
+  ::selection {
+    @apply bg-blush-300 text-plum;
+  }
+
+  :where(a, button, input, select, textarea):focus-visible {
+    outline: 2px solid #d81b60;
+    outline-offset: 3px;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    @apply text-plum/40;
+  }
+
+  /* Slim, quiet scrollbars */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(74, 21, 37, 0.2) transparent;
+  }
+  *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  *::-webkit-scrollbar-thumb {
+    background: rgba(74, 21, 37, 0.18);
+    border-radius: 999px;
+  }
+}
+
+@layer components {
+  .container-x {
+    @apply mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-10 xl:px-14;
+  }
+
+  .section-y {
+    @apply py-16 sm:py-20 lg:py-28;
+  }
+
+  .eyebrow {
+    @apply inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.26em] text-blush-700;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full text-sm font-semibold transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-primary {
+    @apply btn bg-blush-600 px-6 py-3.5 text-cream shadow-pill hover:-translate-y-0.5 hover:bg-blush-700 hover:shadow-[0_20px_40px_-16px_rgba(216,27,96,0.65)] active:translate-y-0;
+  }
+
+  .btn-plum {
+    @apply btn bg-plum px-6 py-3.5 text-cream hover:-translate-y-0.5 hover:bg-plum-deep active:translate-y-0;
+  }
+
+  .btn-outline {
+    @apply btn border border-plum/20 bg-transparent px-6 py-3.5 text-plum hover:border-plum/60 hover:bg-plum hover:text-cream;
+  }
+
+  .icon-btn {
+    @apply relative grid h-10 w-10 place-items-center rounded-full text-plum transition-colors hover:bg-plum/5;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-plum/10 bg-white/60 px-3.5 py-1.5 text-[11px] font-semibold tracking-wide text-plum/80 backdrop-blur transition-colors;
+  }
+
+  .hide-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .link-underline {
+    @apply relative;
+  }
+  .link-underline::after {
+    content: "";
+    @apply absolute -bottom-1 left-0 h-px w-full origin-left scale-x-0 bg-current transition-transform duration-300;
+  }
+  .link-underline:hover::after {
+    @apply scale-x-100;
+  }
+
+  .input-pill {
+    @apply w-full rounded-full border border-plum/15 bg-white/80 px-5 py-3.5 text-sm text-plum shadow-inset outline-none transition placeholder:text-plum/40 focus:border-blush-400 focus:bg-white;
+  }
+
+  .card-surface {
+    @apply rounded-3xl border border-plum/[0.07] bg-white/70 backdrop-blur-sm;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+  .marquee-mask {
+    mask-image: linear-gradient(to right, transparent, black 4%, black 96%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 4%, black 96%, transparent);
+  }
+  .grain-overlay::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    opacity: 0.035;
+    mix-blend-mode: multiply;
+  }
+  .animate-toast-in {
+    animation: toast-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .animate-drawer-in {
+    animation: drawer-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out both;
+  }
+  .animate-rise-in {
+    animation: rise-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes drawer-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   WCAG AA contrast floor for muted type.
+   The design's faint plum/cream tints are lifted just enough to stay readable
+   on the light cream and deep plum surfaces (>= 4.5:1 for small text).
+--------------------------------------------------------------------------- */
+.text-plum\/20,
+.text-plum\/25,
+.text-plum\/30,
+.text-plum\/35 {
+  color: rgb(74 21 37 / 0.65);
+}
+.text-plum\/40,
+.text-plum\/45 {
+  color: rgb(74 21 37 / 0.67);
+}
+.text-plum\/50,
+.text-plum\/55 {
+  color: rgb(74 21 37 / 0.69);
+}
+.text-plum\/60 {
+  color: rgb(74 21 37 / 0.72);
+}
+
+.text-cream\/30,
+.text-cream\/35,
+.text-cream\/40 {
+  color: rgb(255 246 241 / 0.58);
+}
+.text-cream\/45,
+.text-cream\/50 {
+  color: rgb(255 246 241 / 0.62);
+}
+.text-cream\/55,
+.text-cream\/60 {
+  color: rgb(255 246 241 / 0.66);
+}
+
+input::placeholder,
+textarea::placeholder,
+.placeholder\:text-plum\/40::placeholder {
+  color: rgb(74 21 37 / 0.65);
+}
+.placeholder\:text-cream\/40::placeholder {
+  color: rgb(255 246 241 / 0.62);
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

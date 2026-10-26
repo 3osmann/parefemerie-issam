@@ -1,0 +1,167 @@
+// Prisma schema for Nutriiva — Neon (serverless Postgres)
+// Docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum ProductCategory {
+  WEIGHT_LOSS
+  WELLNESS
+  SKIN
+  HAIR
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  FULFILLED
+  CANCELLED
+}
+
+model Product {
+  id             String          @id @default(cuid())
+  slug           String          @unique
+  name           String
+  subtitle       String
+  description    String
+  category       ProductCategory
+  flavor         String
+  // Prices are stored in cents to avoid floating point issues.
+  price          Int
+  compareAtPrice Int?
+  rating         Float           @default(4.9)
+  reviewCount    Int             @default(0)
+  badge          String?
+  accentFrom     String
+  accentTo       String
+  lidColor       String
+  labelColor     String
+  artVariant     String          @default("berry")
+  isBestseller   Boolean         @default(false)
+  isBundle       Boolean         @default(false)
+  ingredients    String[]
+  benefits       String[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  reviews     Review[]
+  bundleItems BundleItem[]
+  cartItems   CartItem[]
+  orderItems  OrderItem[]
+
+  @@index([category])
+  @@index([isBestseller])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  customer  String
+  handle    String?
+  location  String?
+  title     String
+  body      String
+  rating    Int      @default(5)
+  verified  Boolean  @default(true)
+  image     String?
+  avatar    String?
+  featured  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([productId])
+}
+
+model Bundle {
+  id             String   @id @default(cuid())
+  slug           String   @unique
+  name           String
+  tagline        String
+  packSize       Int
+  price          Int
+  compareAtPrice Int
+  badge          String?
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  items BundleItem[]
+}
+
+model BundleItem {
+  id        String  @id @default(cuid())
+  bundleId  String
+  bundle    Bundle  @relation(fields: [bundleId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int     @default(1)
+
+  @@unique([bundleId, productId])
+}
+
+model Cart {
+  id        String     @id @default(cuid())
+  sessionId String     @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  items CartItem[]
+  order Order?
+}
+
+model CartItem {
+  id        String  @id @default(cuid())
+  cartId    String
+  cart      Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int     @default(1)
+  // "one_time" | "subscription"
+  purchaseType String @default("one_time")
+
+  @@unique([cartId, productId, purchaseType])
+}
+
+model Order {
+  id         String       @id @default(cuid())
+  number     String       @unique
+  cartId     String?      @unique
+  cart       Cart?        @relation(fields: [cartId], references: [id], onDelete: SetNull)
+  email      String
+  subtotal   Int
+  discount   Int          @default(0)
+  shipping   Int          @default(0)
+  total      Int
+  status     OrderStatus  @default(PENDING)
+  isSubscription Boolean  @default(false)
+  createdAt  DateTime     @default(now())
+
+  items OrderItem[]
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  name      String
+  price     Int
+  quantity  Int
+
+  @@index([orderId])
+}
+
+model Subscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  source    String   @default("footer")
+  createdAt DateTime @default(now())
+}
